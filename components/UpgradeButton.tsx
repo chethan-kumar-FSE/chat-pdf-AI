@@ -38,7 +38,7 @@ export default function UpgradeButton({
       disabled={loading}
       className={cn(
         "h-8 gap-1.5 bg-amber-600 text-white hover:bg-amber-700 font-medium rounded-lg px-4",
-        className
+        className,
       )}
     >
       {loading ? (
@@ -47,12 +47,12 @@ export default function UpgradeButton({
           <span>Redirecting...</span>
         </>
       ) : (
-        children ?? (
+        (children ?? (
           <>
             <Zap className="h-3.5 w-3.5 fill-current" />
             <span>Upgrade to Pro</span>
           </>
-        )
+        ))
       )}
     </Button>
   );

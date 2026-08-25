@@ -17,12 +17,17 @@ import FileUpload from "@/components/FileUpload";
 import UpgradeButton from "../components/UpgradeButton";
 import { checkSubscription } from "@/lib/subscription";
 import { UserButton } from "@clerk/nextjs";
+import { chats } from "@/lib/db/schema";
+import { db } from "@/lib/db";
+import { cn } from "@/lib/utils";
 
 export default async function Home() {
   const { userId } = await auth();
 
   const isUserLoggedIn = !!userId;
-  const isSubscribed = await checkSubscription();
+  const isPro = await checkSubscription();
+
+  const _chats = userId ? await db.select().from(chats) : [];
 
   return (
     <main className="min-h-screen bg-background text-foreground">
@@ -46,7 +51,7 @@ export default async function Home() {
           <div className="flex items-center gap-2">
             {isUserLoggedIn ? (
               <>
-                {!isSubscribed ? (
+                {!isPro ? (
                   <UpgradeButton className="h-9 px-3.5 text-xs bg-amber-600 hover:bg-amber-700 font-medium" />
                 ) : (
                   <div className="flex h-9 items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 text-xs font-medium text-emerald-600 dark:text-emerald-400">
@@ -131,36 +136,76 @@ export default async function Home() {
               need. No more scrolling through hundreds of pages.
             </p>
 
-            {!isSubscribed && (
+            {!isPro && (
               <p className="mt-3 text-xs font-medium text-amber-600 dark:text-amber-400">
-                ⚡ Start free with up to 10 questions per document. Upgrade
-                anytime for unlimited access.
+                ⚡ Free plan includes up to 5 documents with 10 questions per
+                document. Upgrade anytime for unlimited access.
               </p>
             )}
           </div>
-
           <div className="mx-auto mt-12 max-w-2xl">
             {isUserLoggedIn ? (
               <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-lg shadow-black/[0.03]">
                 <div className="border-b border-border px-6 py-5">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted">
-                      <Upload className="h-5 w-5" />
-                    </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted">
+                        <Upload className="h-5 w-5" />
+                      </div>
 
-                    <div>
-                      <h2 className="text-sm font-semibold">
-                        Upload your document
-                      </h2>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h2 className="text-sm font-semibold">
+                            Upload your document
+                          </h2>
+                          {isPro ? (
+                            <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
+                              <Crown className="h-3 w-3 fill-current" />
+                              Unlimited
+                            </span>
+                          ) : (
+                            <span
+                              className={cn(
+                                "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium border",
+                                _chats.length >= 5
+                                  ? "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                                  : "border-border bg-muted/60 text-muted-foreground",
+                              )}
+                            >
+                              {_chats.length}/5 documents
+                            </span>
+                          )}
+                        </div>
 
-                      <p className="mt-0.5 text-xs text-muted-foreground">
-                        Start a new conversation with your PDF
-                      </p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">
+                          {_chats.length >= 5 && !isPro
+                            ? "Limit reached — upgrade to Pro to add more files"
+                            : "Start a new conversation with your PDF"}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
+
                 <div className="p-6">
-                  <FileUpload />
+                  {/* HARD DISABLE AT UI LEVEL */}
+                  {_chats.length >= 5 && !isPro ? (
+                    <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-amber-500/30 bg-amber-500/5 p-8 text-center">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                        <Crown className="h-6 w-6" />
+                      </div>
+                      <h3 className="mt-4 text-base font-semibold text-foreground">
+                        Document limit reached (5/5)
+                      </h3>
+                      <p className="mt-1 text-sm text-muted-foreground max-w-sm">
+                        You have used all 5 free document uploads. Upgrade to
+                        Pro for unlimited PDF uploads and instant AI responses.
+                      </p>
+                      <UpgradeButton className="mt-6" />
+                    </div>
+                  ) : (
+                    <FileUpload />
+                  )}
                 </div>
               </div>
             ) : (
@@ -189,7 +234,6 @@ export default async function Home() {
               </div>
             )}
           </div>
-
           <div className="mx-auto mt-8 flex flex-wrap justify-center gap-x-6 gap-y-3">
             <TrustPoint>AI-powered answers</TrustPoint>
 
