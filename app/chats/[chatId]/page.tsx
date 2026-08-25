@@ -3,6 +3,7 @@ import PDFviewer from "@/components/PDFviewer";
 import Sidebar from "@/components/Sidebar";
 import { db } from "@/lib/db";
 import { chats } from "@/lib/db/schema";
+import { checkSubscription } from "@/lib/subscription";
 import { auth } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
@@ -20,6 +21,7 @@ const ChatPage = async ({ params }: Props) => {
 
   const { chatId } = await params;
   const currentChatId = Number(chatId);
+  const isPro = await checkSubscription();
 
   if (Number.isNaN(currentChatId)) {
     redirect("/");
@@ -46,7 +48,11 @@ const ChatPage = async ({ params }: Props) => {
           </div>
         </section>
         <section className="flex w-[390px] shrink-0 flex-col border-l border-border bg-background">
-          <ChatSection fileKey={currentChat.fileKey} chatId={currentChatId} />
+          <ChatSection
+            isPro={!!isPro}
+            fileKey={currentChat.fileKey}
+            chatId={currentChatId}
+          />
         </section>
       </main>
     </div>

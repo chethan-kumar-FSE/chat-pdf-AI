@@ -16,6 +16,8 @@ export async function POST(req: Request) {
     await req.json();
 
   // 1. Get the latest user question as plain text
+
+  console.log("messages--", messages);
   const lastMessage = messages[messages.length - 1];
   const userQuestion =
     lastMessage.parts.find((p) => p.type === "text")?.text ?? "";

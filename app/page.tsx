@@ -4,6 +4,7 @@ import Link from "next/link";
 import {
   ArrowRight,
   Check,
+  Crown,
   FileText,
   LogInIcon,
   MessageSquare,
@@ -24,14 +25,8 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      {/* ================================================================ */}
-      {/* Header                                                           */}
-      {/* ================================================================ */}
-
       <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
-          {/* Logo */}
-
           <Link href="/" className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <FileText className="h-4 w-4" />
@@ -48,22 +43,27 @@ export default async function Home() {
             </div>
           </Link>
 
-          {/* Navigation */}
-
           <div className="flex items-center gap-2">
             {isUserLoggedIn ? (
               <>
-                {!isSubscribed && <UpgradeButton />}
+                {!isSubscribed ? (
+                  <UpgradeButton className="h-9 px-3.5 text-xs bg-amber-600 hover:bg-amber-700 font-medium" />
+                ) : (
+                  <div className="flex h-9 items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                    <Crown className="h-3.5 w-3.5 fill-current" />
+                    <span>Pro Plan</span>
+                  </div>
+                )}
 
                 <Button
                   asChild
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  className="h-9 rounded-lg"
+                  className="h-9 px-3 text-xs font-medium"
                 >
                   <Link
                     href="/chats"
-                    className="inline-flex items-center justify-center gap-1.5"
+                    className="inline-flex items-center gap-1.5"
                   >
                     <span>My documents</span>
                     <ArrowRight className="h-3.5 w-3.5" />
@@ -93,29 +93,18 @@ export default async function Home() {
         </div>
       </header>
 
-      {/* ================================================================ */}
-      {/* Hero                                                             */}
-      {/* ================================================================ */}
-
       <section className="relative overflow-hidden">
-        {/* Background decoration */}
-
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute left-1/2 top-0 h-[500px] w-[700px] -translate-x-1/2 rounded-full bg-muted/50 blur-3xl" />
         </div>
 
         <div className="relative mx-auto max-w-6xl px-5 pb-20 pt-20 sm:pt-28">
-          {/* Badge */}
-
           <div className="mb-7 flex justify-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5 text-xs font-medium shadow-sm">
               <Sparkles className="h-3.5 w-3.5" />
               AI-powered document assistant
             </div>
           </div>
-
-          {/* Heading */}
-
           <div className="mx-auto max-w-3xl text-center">
             <h1 className="text-4xl font-semibold leading-[1.1] tracking-tight sm:text-6xl">
               Chat with your documents.
@@ -130,15 +119,9 @@ export default async function Home() {
             </p>
           </div>
 
-          {/* ============================================================ */}
-          {/* Upload Card                                                   */}
-          {/* ============================================================ */}
-
           <div className="mx-auto mt-12 max-w-2xl">
             {isUserLoggedIn ? (
               <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-lg shadow-black/[0.03]">
-                {/* Card header */}
-
                 <div className="border-b border-border px-6 py-5">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted">
@@ -156,9 +139,6 @@ export default async function Home() {
                     </div>
                   </div>
                 </div>
-
-                {/* Upload area */}
-
                 <div className="p-6">
                   <FileUpload />
                 </div>
@@ -190,10 +170,6 @@ export default async function Home() {
             )}
           </div>
 
-          {/* ============================================================ */}
-          {/* Trust points                                                  */}
-          {/* ============================================================ */}
-
           <div className="mx-auto mt-8 flex flex-wrap justify-center gap-x-6 gap-y-3">
             <TrustPoint>AI-powered answers</TrustPoint>
 
@@ -203,10 +179,6 @@ export default async function Home() {
           </div>
         </div>
       </section>
-
-      {/* ================================================================ */}
-      {/* How it works                                                     */}
-      {/* ================================================================ */}
 
       <section className="border-t border-border bg-muted/20">
         <div className="mx-auto max-w-6xl px-5 py-20">
@@ -224,8 +196,6 @@ export default async function Home() {
               questions.
             </p>
           </div>
-
-          {/* Steps */}
 
           <div className="mx-auto mt-12 grid max-w-4xl gap-4 md:grid-cols-3">
             <FeatureCard
@@ -252,10 +222,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ================================================================ */}
-      {/* Bottom CTA                                                       */}
-      {/* ================================================================ */}
-
       <section className="border-t border-border">
         <div className="mx-auto max-w-3xl px-5 py-20 text-center">
           <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-muted">
@@ -281,10 +247,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ================================================================ */}
-      {/* Footer                                                           */}
-      {/* ================================================================ */}
-
       <footer className="border-t border-border">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-6">
           <div className="flex items-center gap-2">
@@ -304,10 +266,6 @@ export default async function Home() {
   );
 }
 
-/* ========================================================================== */
-/* Trust Point                                                                */
-/* ========================================================================== */
-
 function TrustPoint({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -319,10 +277,6 @@ function TrustPoint({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
-
-/* ========================================================================== */
-/* Feature Card                                                               */
-/* ========================================================================== */
 
 function FeatureCard({
   number,
