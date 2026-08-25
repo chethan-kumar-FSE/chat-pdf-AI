@@ -16,6 +16,7 @@ import {
 import FileUpload from "@/components/FileUpload";
 import UpgradeButton from "../components/UpgradeButton";
 import { checkSubscription } from "@/lib/subscription";
+import { UserButton } from "@clerk/nextjs";
 
 export default async function Home() {
   const { userId } = await auth();
@@ -36,7 +37,6 @@ export default async function Home() {
               <span className="text-sm font-semibold leading-none">
                 DocChat
               </span>
-
               <span className="mt-1 text-[10px] text-muted-foreground">
                 AI document assistant
               </span>
@@ -69,6 +69,17 @@ export default async function Home() {
                     <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 </Button>
+
+                {/* User Profile Avatar & Logout Dropdown */}
+                <div className="ml-1 flex items-center pl-2 border-l border-border/60">
+                  <UserButton
+                    appearance={{
+                      elements: {
+                        avatarBox: "h-8 w-8 rounded-lg",
+                      },
+                    }}
+                  />
+                </div>
               </>
             ) : (
               <>
@@ -82,9 +93,12 @@ export default async function Home() {
                 </Button>
 
                 <Button asChild size="sm" className="h-9 rounded-lg">
-                  <Link href="/sign-up">
-                    Get started
-                    <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                  <Link
+                    href="/sign-up"
+                    className="inline-flex items-center justify-center gap-1.5"
+                  >
+                    <span>Get started</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 </Button>
               </>
@@ -92,7 +106,6 @@ export default async function Home() {
           </div>
         </div>
       </header>
-
       <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute left-1/2 top-0 h-[500px] w-[700px] -translate-x-1/2 rounded-full bg-muted/50 blur-3xl" />
