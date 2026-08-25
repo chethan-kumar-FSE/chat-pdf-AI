@@ -130,6 +130,13 @@ export default async function Home() {
               Upload a PDF, ask questions, and let AI find the information you
               need. No more scrolling through hundreds of pages.
             </p>
+
+            {!isSubscribed && (
+              <p className="mt-3 text-xs font-medium text-amber-600 dark:text-amber-400">
+                ⚡ Start free with up to 10 questions per document. Upgrade
+                anytime for unlimited access.
+              </p>
+            )}
           </div>
 
           <div className="mx-auto mt-12 max-w-2xl">
