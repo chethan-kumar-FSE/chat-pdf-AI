@@ -2,13 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  FileText,
-  MessageSquare,
-  Plus,
-  Settings,
-  PanelLeft,
-} from "lucide-react";
+import { UserButton, useClerk } from "@clerk/nextjs";
+import { FileText, Plus, Settings, LogOut } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -26,6 +21,7 @@ type Props = {
 
 export default function Sidebar({ chats, chatId }: Props) {
   const pathname = usePathname();
+  const { signOut } = useClerk();
 
   return (
     <aside className="flex h-dvh w-[250px] shrink-0 flex-col border-r border-border bg-background">
@@ -71,7 +67,6 @@ export default function Sidebar({ chats, chatId }: Props) {
           ) : (
             chats.map((chat) => {
               const active = chat.id === chatId;
-              console.log(chat);
 
               return (
                 <Link
@@ -102,13 +97,21 @@ export default function Sidebar({ chats, chatId }: Props) {
       </div>
 
       {/* Bottom navigation */}
-      <div className="border-t border-border p-3">
+      <div className="space-y-1 border-t border-border p-3">
+        {/* User Profile avatar dropdown */}
+        <div className="flex items-center gap-2 px-2 py-1.5 text-sm text-muted-foreground">
+          <UserButton />
+          <span className="text-xs font-medium text-foreground">Account</span>
+        </div>
+
+        {/* Custom Logout Button */}
         <Button
           variant="ghost"
-          className="h-9 w-full justify-start gap-2 px-2.5 text-muted-foreground hover:text-foreground"
+          onClick={() => signOut({ redirectUrl: "/" })}
+          className="h-9 w-full justify-start gap-2 px-2.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
         >
-          <Settings className="h-4 w-4" />
-          Settings
+          <LogOut className="h-4 w-4" />
+          Sign out
         </Button>
       </div>
     </aside>

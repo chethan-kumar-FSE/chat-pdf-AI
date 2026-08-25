@@ -49,12 +49,6 @@ export default function Page() {
             variables: {
               colorPrimary: "var(--primary)",
               colorBackground: "var(--card)",
-              colorText: "var(--card-foreground)",
-              colorTextSecondary: "var(--muted-foreground)",
-              colorInputBackground: "var(--background)",
-              colorInputText: "var(--foreground)",
-              borderRadius: "0.625rem",
-              fontFamily: "var(--font-sans)",
             },
 
             elements: {
