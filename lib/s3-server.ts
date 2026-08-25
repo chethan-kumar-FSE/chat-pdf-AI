@@ -19,7 +19,8 @@ export async function downloadFromS3(fileKey: string): Promise<Blob | null> {
     const bytes = await response.Body.transformToByteArray();
 
     // Return standard native Blob
-    return new Blob([bytes], { type: "application/pdf" });
+    const blob = new Blob([Buffer.from(bytes)]); // ✅
+    return blob;
   } catch (err) {
     console.error("S3 download failed:", err);
     return null;
