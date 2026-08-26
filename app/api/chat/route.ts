@@ -41,15 +41,16 @@ export async function POST(req: Request) {
     includeMetadata: true,
   });
 
-  // 4. Build the context string from the retrieved chunks
+  console.log("query-result", queryResults);
+
   const context = queryResults.matches
     .map((match) => (match.metadata as any)?.text ?? "")
     .join("\n\n---\n\n");
 
-  // 5. Feed that context into the system prompt, then stream the answer
   const result = streamText({
     model: openai("gpt-4o-mini"),
-    system: `You are answering questions about a PDF document. Use ONLY the context below to answer — if the answer isn't in the context, say you don't know.
+    system: `You are answering questions about a PDF document. Use ONLY the context below to answer — 
+    if the answer isn't in the context, say you don't know.
 
 Context:
 ${context}`,

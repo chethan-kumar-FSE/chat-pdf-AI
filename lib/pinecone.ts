@@ -58,8 +58,9 @@ export async function loadS3IntoPinecone(fileKey: string) {
   // 5. Clean, sanitize, and split text into chunked LangChain Documents
   const docs = await prepareDocument(pdfPayload, fileKey);
 
-  console.log(`Generated ${docs.length} document chunks for Pinecone.`);
-  console.log("docs", docs);
+  if (docs.length === 0) {
+    throw new Error("Internal server error");
+  }
 
   // Return the chunked documents (ready to be embedded & upserted)
   const vectors = await Promise.all(
@@ -99,7 +100,6 @@ export const truncateStringByBytes = (str: string, bytes: number) => {
   return new TextDecoder("utf-8").decode(enc.encode(str).slice(0, bytes));
 };
 
-// Interface matching your exact JSON structure
 interface PDFParseData {
   pages: {
     numpages: number;
@@ -129,7 +129,6 @@ export async function prepareDocument(data: PDFParseData, fileKey: string) {
     chunkOverlap: 200,
   });
 
-  // 3. Split the text document
   const docs = await splitter.splitDocuments([
     new Document({
       pageContent,

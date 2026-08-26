@@ -20,6 +20,7 @@ import { UserButton } from "@clerk/nextjs";
 import { chats } from "@/lib/db/schema";
 import { db } from "@/lib/db";
 import { cn } from "@/lib/utils";
+import { eq } from "drizzle-orm";
 
 export default async function Home() {
   const { userId } = await auth();
@@ -27,7 +28,9 @@ export default async function Home() {
   const isUserLoggedIn = !!userId;
   const isPro = await checkSubscription();
 
-  const _chats = userId ? await db.select().from(chats) : [];
+  const _chats = userId
+    ? await db.select().from(chats).where(eq(chats.userId, userId))
+    : [];
 
   return (
     <main className="min-h-screen bg-background text-foreground">

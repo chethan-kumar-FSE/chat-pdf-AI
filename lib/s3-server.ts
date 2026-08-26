@@ -15,10 +15,8 @@ export async function downloadFromS3(fileKey: string): Promise<Blob | null> {
       throw new Error("S3 object has no body");
     }
 
-    // Convert S3 stream directly to Uint8Array/Buffer
     const bytes = await response.Body.transformToByteArray();
 
-    // Return standard native Blob
     const blob = new Blob([Buffer.from(bytes)]); // ✅
     return blob;
   } catch (err) {
