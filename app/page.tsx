@@ -55,12 +55,18 @@ export default async function Home() {
             {isUserLoggedIn ? (
               <>
                 {!isPro ? (
-                  <UpgradeButton className="h-9 px-3.5 text-xs bg-amber-600 hover:bg-amber-700 font-medium" />
+                  <UpgradeButton
+                    isPro={isPro}
+                    className="h-9 px-3.5 text-xs bg-amber-600 hover:bg-amber-700 font-medium"
+                  />
                 ) : (
-                  <div className="flex h-9 items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                  <UpgradeButton
+                    isPro={isPro}
+                    className="h-9 px-3.5 text-xs border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-medium"
+                  >
                     <Crown className="h-3.5 w-3.5 fill-current" />
                     <span>Pro Plan</span>
-                  </div>
+                  </UpgradeButton>
                 )}
 
                 <Button
@@ -78,13 +84,10 @@ export default async function Home() {
                   </Link>
                 </Button>
 
-                {/* User Profile Avatar & Logout Dropdown */}
                 <div className="ml-1 flex items-center pl-2 border-l border-border/60">
                   <UserButton
                     appearance={{
-                      elements: {
-                        avatarBox: "h-8 w-8 rounded-lg",
-                      },
+                      elements: { avatarBox: "h-8 w-8 rounded-lg" },
                     }}
                   />
                 </div>
@@ -204,7 +207,7 @@ export default async function Home() {
                         You have used all 5 free document uploads. Upgrade to
                         Pro for unlimited PDF uploads and instant AI responses.
                       </p>
-                      <UpgradeButton className="mt-6" />
+                      <UpgradeButton isPro={isPro} className="mt-6" />
                     </div>
                   ) : (
                     <FileUpload />

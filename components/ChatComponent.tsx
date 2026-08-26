@@ -170,7 +170,7 @@ export default function ChatSection({
                 Pro for unlimited questions and larger uploads.
               </p>
 
-              <UpgradeButton className="mt-3.5" />
+              <UpgradeButton isPro={isPro} className="mt-3.5" />
             </div>
           ) : (
             <div

@@ -26,7 +26,6 @@ export async function POST(req: NextRequest) {
 
   const session = event.data.object as Stripe.Checkout.Session;
 
-  // Event 1: Checkout completed → save the new subscription
   if (event.type === "checkout.session.completed") {
     const subscription = await stripe.subscriptions.retrieve(
       session.subscription as string,
@@ -36,7 +35,7 @@ export async function POST(req: NextRequest) {
       return new NextResponse("No userId in metadata", { status: 400 });
     }
 
-    const d = await db.insert(userSubscription).values({
+    await db.insert(userSubscription).values({
       userId: session.metadata.userId,
       stripeSubscriptionId: subscription.id,
       stripeCustomerId: subscription.customer as string,
@@ -45,10 +44,8 @@ export async function POST(req: NextRequest) {
         subscription.items.data[0].current_period_end * 1000,
       ),
     });
-    console.log("data-d", d);
   }
 
-  // Event 2: Recurring payment succeeded → extend the period end date
   if (event.type === "invoice.payment_succeeded") {
     const subscription = await stripe.subscriptions.retrieve(
       session.subscription as string,
@@ -65,6 +62,17 @@ export async function POST(req: NextRequest) {
       .where(eq(userSubscription.stripeSubscriptionId, subscription.id));
 
     console.log(daa);
+  }
+
+  if (event.type === "customer.subscription.deleted") {
+    const subscription = event.data.object as Stripe.Subscription;
+
+    await db
+      .update(userSubscription)
+      .set({
+        stripeCurrentPeriodEnd: new Date(0), // set to expire
+      })
+      .where(eq(userSubscription.stripeSubscriptionId, subscription.id));
   }
 
   return new NextResponse(null, { status: 200 });
