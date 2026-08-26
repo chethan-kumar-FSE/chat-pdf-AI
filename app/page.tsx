@@ -63,10 +63,7 @@ export default async function Home() {
                   <UpgradeButton
                     isPro={isPro}
                     className="h-9 px-3.5 text-xs border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-medium"
-                  >
-                    <Crown className="h-3.5 w-3.5 fill-current" />
-                    <span>Pro Plan</span>
-                  </UpgradeButton>
+                  />
                 )}
 
                 <Button

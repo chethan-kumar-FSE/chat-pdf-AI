@@ -30,9 +30,9 @@ export default function ChatSection({
   chatId: number;
 }) {
   const [input, setInput] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const hasHydrated = useRef(false);
-
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { data, isLoading } = useQuery({
@@ -80,16 +80,26 @@ export default function ChatSection({
   }, [isLoading, data, setMessages]);
 
   useEffect(() => {
+    if (status === "ready" || status === "error") {
+      setIsGenerating(false);
+    }
+  }, [status]);
+
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({
-      behavior: "auto",
+      behavior: "smooth",
       block: "end",
     });
-  }, [messages]);
+  }, [messages, isGenerating]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!input.trim()) return;
+
+    if (isGenerating) return;
+
+    setIsGenerating(true);
 
     sendMessage({
       text: input,
@@ -99,8 +109,11 @@ export default function ChatSection({
   };
 
   const currentTotalMessages = messages.length;
+
   const MAX_FREE_MESSAGES = 10;
+
   const isLimitReached = !isPro && currentTotalMessages >= MAX_FREE_MESSAGES;
+
   return (
     <div className="flex h-full min-h-0 flex-col bg-background">
       <header className="flex h-14 shrink-0 items-center border-b border-border px-4">
@@ -135,21 +148,7 @@ export default function ChatSection({
               <Message key={message.id} message={message} />
             ))}
 
-            {status === "streaming" && (
-              <div className="flex items-start gap-3">
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-muted">
-                  <Bot className="h-3.5 w-3.5" />
-                </div>
-
-                <div className="flex items-center gap-1 pt-1.5">
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-muted-foreground/50" />
-
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-muted-foreground/50 [animation-delay:150ms]" />
-
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-muted-foreground/50 [animation-delay:300ms]" />
-                </div>
-              </div>
-            )}
+            {isGenerating && <TypingIndicator />}
 
             <div ref={messagesEndRef} className="h-px" />
           </div>
@@ -160,12 +159,13 @@ export default function ChatSection({
         <form onSubmit={handleSubmit}>
           {isLimitReached ? (
             <div className="flex flex-col items-center justify-center rounded-xl border border-amber-500/30 bg-amber-500/10 p-5 text-center shadow-sm">
-              <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-semibold text-sm">
+              <div className="flex items-center gap-2 text-sm font-semibold text-amber-600 dark:text-amber-400">
                 <Zap className="h-4 w-4 fill-current" />
+
                 <span>Free Tier Limit Reached</span>
               </div>
 
-              <p className="mt-1 text-xs text-muted-foreground max-w-sm">
+              <p className="mt-1 max-w-sm text-xs text-muted-foreground">
                 You've used all 10 free messages for this document. Upgrade to
                 Pro for unlimited questions and larger uploads.
               </p>
@@ -184,7 +184,7 @@ export default function ChatSection({
               <Textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                disabled={status === "streaming" || isLimitReached}
+                disabled={isGenerating || status === "streaming"}
                 placeholder="Ask anything about this document..."
                 className={cn(
                   "min-h-[72px] w-full resize-none",
@@ -201,6 +201,7 @@ export default function ChatSection({
 
                     if (
                       input.trim() &&
+                      !isGenerating &&
                       status !== "streaming" &&
                       !isLimitReached
                     ) {
@@ -217,7 +218,10 @@ export default function ChatSection({
                   <span className="text-[11px] text-muted-foreground">
                     {isPro
                       ? "Unlimited Pro access"
-                      : `${Math.max(0, 10 - currentTotalMessages)} of 10 free messages remaining`}
+                      : `${Math.max(
+                          0,
+                          10 - currentTotalMessages,
+                        )} of 10 free messages remaining`}
                   </span>
                 </div>
 
@@ -225,11 +229,14 @@ export default function ChatSection({
                   type="submit"
                   size="icon"
                   disabled={
-                    !input.trim() || status === "streaming" || isLimitReached
+                    !input.trim() ||
+                    isGenerating ||
+                    status === "streaming" ||
+                    isLimitReached
                   }
                   className="h-8 w-8 rounded-lg"
                 >
-                  {status === "streaming" ? (
+                  {isGenerating ? (
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
                   ) : (
                     <ArrowUp className="h-4 w-4" />
@@ -245,6 +252,30 @@ export default function ChatSection({
               : "Enter to send · Shift + Enter for a new line"}
           </p>
         </form>
+      </div>
+    </div>
+  );
+}
+
+function TypingIndicator() {
+  return (
+    <div className="flex items-start gap-3">
+      {/* AI Avatar */}
+      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-muted">
+        <Bot className="h-3.5 w-3.5 text-foreground" />
+      </div>
+
+      {/* Typing */}
+      <div className="flex items-center gap-2 pt-1.5">
+        <span className="text-xs text-muted-foreground">Thinking</span>
+
+        <div className="flex items-center gap-1">
+          <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground/60" />
+
+          <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground/60 [animation-delay:150ms]" />
+
+          <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground/60 [animation-delay:300ms]" />
+        </div>
       </div>
     </div>
   );
@@ -313,12 +344,14 @@ function Message({ message }: { message: UIMessage }) {
 
   return (
     <div className={cn("flex items-start gap-3", isUser && "justify-end")}>
+      {/* AI Avatar */}
       {!isUser && (
         <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-muted">
           <Bot className="h-3.5 w-3.5 text-foreground" />
         </div>
       )}
 
+      {/* Message */}
       <div
         className={cn(
           "max-w-[82%]",
@@ -340,6 +373,7 @@ function Message({ message }: { message: UIMessage }) {
           );
         })}
 
+        {/* AI actions */}
         {!isUser && (
           <div className="mt-2">
             <Button
