@@ -51,7 +51,6 @@ export default function Page() {
             variables: {
               colorPrimary: "#00d2ff",
               colorBackground: "#0d121f",
-              colorText: "#f8fafc",
             },
 
             elements: {
