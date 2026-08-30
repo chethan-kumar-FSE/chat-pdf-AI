@@ -115,35 +115,46 @@ export default function ChatSection({
   const isLimitReached = !isPro && currentTotalMessages >= MAX_FREE_MESSAGES;
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-background">
-      <header className="flex h-14 shrink-0 items-center border-b border-border px-4">
+    <div className="flex h-full min-h-0 flex-col bg-[#080c15] text-slate-200">
+      {/* Header */}
+      <header className="flex h-16 shrink-0 items-center justify-between border-b border-white/[0.08] px-4 bg-[#090d18]/80 backdrop-blur-xl">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-muted">
-            <Sparkles className="h-3.5 w-3.5 text-foreground" />
+          <div className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 shadow-[0_0_12px_rgba(0,210,255,0.3)]">
+            <Sparkles className="h-4 w-4" />
           </div>
 
           <div>
-            <h2 className="text-sm font-semibold">Document AI</h2>
-
-            <p className="text-[11px] text-muted-foreground">
-              Ask questions about your PDF
+            <h2 className="text-xs font-bold text-white flex items-center gap-1.5">
+              <span>MindSpark Assistant</span>
+              <span className="flex h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
+            </h2>
+            <p className="text-[10px] text-slate-400 font-mono">
+              Vector Context Active
             </p>
           </div>
         </div>
+
+        {isPro && (
+          <span className="inline-flex items-center gap-1 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2 py-0.5 text-[10px] font-mono text-cyan-300">
+            <Zap className="h-3 w-3 fill-current" />
+            PRO
+          </span>
+        )}
       </header>
 
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      {/* Messages Scroll Area */}
+      <div className="min-h-0 flex-1 overflow-y-auto bg-[#07090e]/60">
         {isLoading ? (
           <div className="flex h-full items-center justify-center">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              Loading conversation...
+            <div className="flex items-center gap-2 text-xs text-slate-400 font-mono">
+              <Loader2 className="h-4 w-4 animate-spin text-cyan-400" />
+              <span>Retrieving neural conversation...</span>
             </div>
           </div>
         ) : messages.length === 0 ? (
           <EmptyState setInput={setInput} />
         ) : (
-          <div className="space-y-7 px-5 py-6">
+          <div className="space-y-6 px-4 py-5">
             {messages.map((message) => (
               <Message key={message.id} message={message} />
             ))}
@@ -155,30 +166,29 @@ export default function ChatSection({
         )}
       </div>
 
-      <div className="shrink-0 px-4 pb-4 pt-3">
+      {/* Input Dock */}
+      <div className="shrink-0 p-3 bg-[#080c15] border-t border-white/[0.06]">
         <form onSubmit={handleSubmit}>
           {isLimitReached ? (
-            <div className="flex flex-col items-center justify-center rounded-xl border border-amber-500/30 bg-amber-500/10 p-5 text-center shadow-sm">
-              <div className="flex items-center gap-2 text-sm font-semibold text-amber-600 dark:text-amber-400">
-                <Zap className="h-4 w-4 fill-current" />
-
-                <span>Free Tier Limit Reached</span>
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-amber-500/30 bg-amber-950/20 p-4 text-center shadow-lg backdrop-blur-md">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-400">
+                <Zap className="h-3.5 w-3.5 fill-current" />
+                <span>Free Message Limit Reached (10/10)</span>
               </div>
 
-              <p className="mt-1 max-w-sm text-xs text-muted-foreground">
-                You've used all 10 free messages for this document. Upgrade to
-                Pro for unlimited questions and larger uploads.
+              <p className="mt-1 max-w-sm text-[11px] text-slate-400">
+                Upgrade to Pro for unrestricted conversations and continuous
+                intelligence.
               </p>
 
-              <UpgradeButton isPro={isPro} className="mt-3.5" />
+              <UpgradeButton isPro={isPro} className="mt-3 h-8 text-xs" />
             </div>
           ) : (
             <div
               className={cn(
-                "overflow-hidden rounded-xl border border-border bg-background",
-                "shadow-sm transition-all",
-                "focus-within:border-ring/50",
-                "focus-within:ring-2 focus-within:ring-ring/10",
+                "relative overflow-hidden rounded-2xl border border-white/10 bg-[#0c101c]/90",
+                "shadow-lg transition-all duration-300",
+                "focus-within:border-cyan-500/50 focus-within:shadow-[0_0_20px_-3px_rgba(0,210,255,0.2)]",
               )}
             >
               <Textarea
@@ -187,13 +197,12 @@ export default function ChatSection({
                 disabled={isGenerating || status === "streaming"}
                 placeholder="Ask anything about this document..."
                 className={cn(
-                  "min-h-[72px] w-full resize-none",
+                  "min-h-[70px] w-full resize-none",
                   "border-0 bg-transparent",
-                  "px-3.5 pt-3.5",
-                  "text-sm leading-5",
-                  "shadow-none",
-                  "placeholder:text-muted-foreground/60",
-                  "focus-visible:ring-0",
+                  "p-3",
+                  "text-xs leading-relaxed text-slate-100",
+                  "placeholder:text-slate-500",
+                  "focus-visible:ring-0 shadow-none",
                 )}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
@@ -211,45 +220,42 @@ export default function ChatSection({
                 }}
               />
 
-              <div className="flex items-center justify-between px-2.5 pb-2.5">
-                <div className="flex items-center gap-1.5 px-1">
-                  <FileText className="h-3 w-3 text-muted-foreground/60" />
-
-                  <span className="text-[11px] text-muted-foreground">
+              <div className="flex items-center justify-between px-3 pb-2.5">
+                <div className="flex items-center gap-1 text-[10px] text-slate-400 font-mono">
+                  <FileText className="h-3 w-3 text-cyan-400/80" />
+                  <span>
                     {isPro
-                      ? "Unlimited Pro access"
-                      : `${Math.max(
-                          0,
-                          10 - currentTotalMessages,
-                        )} of 10 free messages remaining`}
+                      ? "Unlimited Pro Access"
+                      : `${Math.max(0, 10 - currentTotalMessages)} msgs remaining`}
                   </span>
                 </div>
 
                 <Button
                   type="submit"
                   size="icon"
+                  variant="glow"
                   disabled={
                     !input.trim() ||
                     isGenerating ||
                     status === "streaming" ||
                     isLimitReached
                   }
-                  className="h-8 w-8 rounded-lg"
+                  className="h-7 w-7 rounded-lg"
                 >
                   {isGenerating ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <Loader2 className="h-3.5 w-3.5 animate-spin text-slate-950" />
                   ) : (
-                    <ArrowUp className="h-4 w-4" />
+                    <ArrowUp className="h-3.5 w-3.5 text-slate-950 stroke-[3]" />
                   )}
                 </Button>
               </div>
             </div>
           )}
 
-          <p className="mt-2 text-center text-[10px] text-muted-foreground/60">
+          <p className="mt-1.5 text-center text-[10px] text-slate-500 font-mono">
             {isLimitReached
-              ? "Upgrade your account to unlock continuous messaging"
-              : "Enter to send · Shift + Enter for a new line"}
+              ? "Upgrade to unlock continuous messaging"
+              : "Enter to send · Shift + Enter for new line"}
           </p>
         </form>
       </div>
@@ -259,22 +265,17 @@ export default function ChatSection({
 
 function TypingIndicator() {
   return (
-    <div className="flex items-start gap-3">
-      {/* AI Avatar */}
-      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-muted">
-        <Bot className="h-3.5 w-3.5 text-foreground" />
+    <div className="flex items-start gap-2.5">
+      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
+        <Bot className="h-3.5 w-3.5" />
       </div>
 
-      {/* Typing */}
       <div className="flex items-center gap-2 pt-1.5">
-        <span className="text-xs text-muted-foreground">Thinking</span>
-
+        <span className="text-xs text-slate-400 font-mono">Synthesizing</span>
         <div className="flex items-center gap-1">
-          <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground/60" />
-
-          <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground/60 [animation-delay:150ms]" />
-
-          <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-muted-foreground/60 [animation-delay:300ms]" />
+          <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-cyan-400" />
+          <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-cyan-400 [animation-delay:150ms]" />
+          <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-cyan-400 [animation-delay:300ms]" />
         </div>
       </div>
     </div>
@@ -287,25 +288,24 @@ function EmptyState({
   setInput: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const suggestions = [
-    "Summarize this document",
-    "What are the main points?",
-    "Explain this document in simple terms",
+    "Summarize the entire document",
+    "What are the key conclusions?",
+    "Extract major figures & metrics",
+    "List potential risks or open questions",
   ];
 
   return (
-    <div className="flex h-full flex-col items-center justify-center px-8">
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-muted/50">
-        <Bot className="h-5 w-5 text-muted-foreground" />
+    <div className="flex h-full flex-col items-center justify-center px-6 py-8">
+      <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 shadow-[0_0_20px_rgba(0,210,255,0.2)]">
+        <Bot className="h-6 w-6" />
       </div>
 
-      <h3 className="mt-4 text-sm font-semibold">Ask about this document</h3>
-
-      <p className="mt-1.5 max-w-[280px] text-center text-xs leading-5 text-muted-foreground">
-        Ask questions, summarize sections, or find specific information from
-        your PDF.
+      <h3 className="mt-4 text-sm font-semibold text-white">Ask Document AI</h3>
+      <p className="mt-1 text-center text-xs text-slate-400 max-w-[260px] leading-relaxed">
+        Query any section, request summaries, or verify citations instantly.
       </p>
 
-      <div className="mt-6 w-full max-w-[300px] space-y-1.5">
+      <div className="mt-5 w-full space-y-2">
         {suggestions.map((suggestion) => (
           <button
             key={suggestion}
@@ -313,25 +313,14 @@ function EmptyState({
             onClick={() => setInput(suggestion)}
             className={cn(
               "group flex w-full items-center justify-between",
-              "rounded-lg border border-border",
-              "px-3 py-2.5",
-              "text-left text-xs text-muted-foreground",
-              "transition-colors",
-              "hover:bg-muted",
-              "hover:text-foreground",
+              "rounded-xl border border-white/[0.08] bg-white/[0.02]",
+              "px-3 py-2 text-left text-xs text-slate-300",
+              "transition-all duration-200",
+              "hover:border-cyan-500/40 hover:bg-cyan-500/5 hover:text-white",
             )}
           >
             <span>{suggestion}</span>
-
-            <ArrowUp
-              className="
-                h-3 w-3
-                rotate-45
-                opacity-0
-                transition-opacity
-                group-hover:opacity-100
-              "
-            />
+            <ArrowUp className="h-3 w-3 rotate-45 text-cyan-400 opacity-0 transition-opacity group-hover:opacity-100" />
           </button>
         ))}
       </div>
@@ -343,58 +332,47 @@ function Message({ message }: { message: UIMessage }) {
   const isUser = message.role === "user";
 
   return (
-    <div className={cn("flex items-start gap-3", isUser && "justify-end")}>
-      {/* AI Avatar */}
+    <div className={cn("flex items-start gap-2.5", isUser && "justify-end")}>
       {!isUser && (
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-muted">
-          <Bot className="h-3.5 w-3.5 text-foreground" />
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
+          <Bot className="h-3.5 w-3.5" />
         </div>
       )}
 
-      {/* Message */}
       <div
         className={cn(
-          "max-w-[82%]",
-
+          "max-w-[85%] rounded-2xl text-xs leading-relaxed",
           isUser
-            ? "rounded-xl bg-primary px-3.5 py-2.5 text-primary-foreground"
-            : "pt-1 text-foreground",
+            ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-medium px-3.5 py-2.5 shadow-[0_0_15px_-3px_rgba(0,210,255,0.3)]"
+            : "bg-white/[0.03] border border-white/[0.08] text-slate-200 px-3.5 py-3 shadow-md",
         )}
       >
         {message.parts.map((part, index) => {
-          if (part.type !== "text") {
-            return null;
-          }
+          if (part.type !== "text") return null;
 
           return (
-            <p key={index} className="whitespace-pre-wrap text-sm leading-6">
+            <p key={index} className="whitespace-pre-wrap">
               {part.text}
             </p>
           );
         })}
 
-        {/* AI actions */}
         {!isUser && (
-          <div className="mt-2">
+          <div className="mt-2.5 flex items-center justify-end border-t border-white/[0.06] pt-2">
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              className="
-                h-7 w-7
-                text-muted-foreground
-                hover:text-foreground
-              "
+              className="h-6 w-6 text-slate-400 hover:text-cyan-300 hover:bg-white/5 rounded-md"
               onClick={() => {
                 const text = message.parts
                   .filter((part) => part.type === "text")
                   .map((part) => part.text)
                   .join("");
-
                 navigator.clipboard.writeText(text);
               }}
             >
-              <Copy className="h-3.5 w-3.5" />
+              <Copy className="h-3 w-3" />
             </Button>
           </div>
         )}

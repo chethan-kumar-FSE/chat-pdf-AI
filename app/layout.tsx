@@ -12,15 +12,28 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "DocChat",
-  description: "Chat with your documents using AI",
+  title: "MindSpark – Next-Gen AI PDF Intelligence",
+  description:
+    "Chat with your PDF documents with AI, extract citations, and summarize knowledge in milliseconds.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${poppins.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col font-sans">
-        <Toaster position="top-center" />
+    <html lang="en" className={`${poppins.variable} dark h-full antialiased`}>
+      <body className="min-h-full flex flex-col font-sans bg-[#07090e] text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200">
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            style: {
+              background: "#0d121f",
+              color: "#f8fafc",
+              border: "1px solid rgba(0, 210, 255, 0.2)",
+              borderRadius: "12px",
+              boxShadow: "0 0 20px rgba(0, 210, 255, 0.15)",
+              fontSize: "12px",
+            },
+          }}
+        />
         <ClerkProvider>
           <QueryProvider>{children}</QueryProvider>
         </ClerkProvider>

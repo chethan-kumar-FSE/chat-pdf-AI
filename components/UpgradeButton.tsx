@@ -36,30 +36,31 @@ export default function UpgradeButton({
     <Button
       type="button"
       size={size}
+      variant={isPro ? "cyber" : "glow"}
       onClick={handleUpgrade}
       disabled={loading}
       className={cn(
-        "h-8 gap-1.5 font-medium rounded-lg px-4",
-        isPro
-          ? "bg-neutral-900 text-white hover:bg-neutral-800"
-          : "bg-amber-600 text-white hover:bg-amber-700",
+        "h-9 gap-2 font-semibold tracking-wide rounded-xl px-5 text-xs transition-all duration-300",
+        !isPro && "shadow-cyan-500/30 hover:shadow-cyan-500/50",
+        isPro &&
+          "border border-cyan-500/40 bg-cyan-950/30 text-cyan-300 hover:bg-cyan-900/40",
         className,
       )}
     >
       {loading ? (
         <>
-          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          <Loader2 className="h-3.5 w-3.5 animate-spin text-inherit" />
           <span>Redirecting...</span>
         </>
       ) : (
         (children ?? (
           <>
             {isPro ? (
-              <Settings className="h-3.5 w-3.5" />
+              <Settings className="h-3.5 w-3.5 text-cyan-400" />
             ) : (
               <Zap className="h-3.5 w-3.5 fill-current" />
             )}
-            <span>{isPro ? "Manage Subscription" : "Upgrade to Pro"}</span>
+            <span>{isPro ? "Manage Subscription" : "Get Unlimited Pro"}</span>
           </>
         ))
       )}

@@ -39,15 +39,17 @@ const ChatPage = async ({ params }: Props) => {
   }
 
   return (
-    <div className="flex h-dvh w-full overflow-hidden bg-background text-foreground">
+    <div className="flex h-dvh w-full overflow-hidden bg-[#07090e] text-slate-100">
       <Sidebar chats={userChats} chatId={currentChatId} />
       <main className="flex min-w-0 flex-1">
-        <section className="relative min-w-0 flex-1 bg-muted/20">
+        {/* PDF Document Viewer Pane */}
+        <section className="relative min-w-0 flex-1 bg-[#05070a] border-r border-white/[0.08]">
           <div className="h-full w-full">
             <PDFviewer fileUrl={currentChat.pdfUrl ?? ""} />
           </div>
         </section>
-        <section className="flex w-[390px] shrink-0 flex-col border-l border-border bg-background">
+        {/* Chat Assistant Pane */}
+        <section className="flex w-[420px] shrink-0 flex-col bg-[#080c15]">
           <ChatSection
             isPro={!!isPro}
             fileKey={currentChat.fileKey}
